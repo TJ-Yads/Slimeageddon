@@ -62,7 +62,6 @@ public class PlayerController : MonoBehaviour
         if (Jump)
         {
             Jump = false;
-            //rb.AddForce(Vector2.up * rb.mass * JumpHeight, ForceMode2D.Impulse);
             rb.velocity = new Vector2(rb.velocity.x, JumpHeight);
             Instantiate(JumpFX, AbosrbFXSpawn);
         }
@@ -71,12 +70,12 @@ public class PlayerController : MonoBehaviour
             Dead = false;
             YouDied();
         }
-        //on in survivial
+        //on in survivial-- uses a timer to determine how well the player does
         if (gameManager.Survivial == 0 && Dead == false)
         {
             TimeAlive += Time.deltaTime;
         }
-        //on in atrition
+        //on in atrition-- causes the player to shrink if you do not keep eating enemies
         if (gameManager.Atr == 1)
         {
             TimeAlive += Time.deltaTime;
@@ -91,7 +90,7 @@ public class PlayerController : MonoBehaviour
     {
         if (CanMove == true)
         {
-            if (Input.GetButtonDown("Jump")&& Jumps > 0)
+            if (Input.GetButtonDown("Jump")&& Jumps > 0)//launch player up when you have jumps left, set jump collider active
             {
                 Jumped = true;
                 Jump = true;
@@ -102,7 +101,7 @@ public class PlayerController : MonoBehaviour
                 CrushFX.SetActive(false);
                 Crush = 1;
             }
-            if (Input.GetButtonDown("Down") && Landed == false)
+            if (Input.GetButtonDown("Down") && Landed == false)//slam downward at high speeds and increase power
             {
                 Crush = 1.33f + TPower.Crush;
                 CrushFX.SetActive(true);
@@ -110,7 +109,7 @@ public class PlayerController : MonoBehaviour
             }
         }
     }
-    public void UpdateSize(float Sustenance)
+    public void UpdateSize(float Sustenance)//primary mechanic that causes the player size to go up when you "eat" enemies
     {
         SizeUpValue += (.02f + Sustenance) * gameManager.Survivial;
         Size = Mathf.Sqrt(SizeUpValue);
@@ -137,7 +136,7 @@ public class PlayerController : MonoBehaviour
     {
         Instantiate(SpawnFX, AbosrbFXSpawn);
     }
-    public void YouDied()
+    public void YouDied()//happens on player death-- presents game completion info such as kill count or time survived
     {
         if (gameManager.Survivial == 0)
         {
@@ -185,7 +184,7 @@ public class PlayerController : MonoBehaviour
     }
 
     //Atrition data
-    public void SizeDown()
+    public void SizeDown()//for atrition mode this will shrink the player if you fail to "eat"
     {
         Size = Mathf.Sqrt(SizeUpValue) * gameManager.Survivial;
         Size = Size * .99f;
@@ -199,7 +198,7 @@ public class PlayerController : MonoBehaviour
             Dead = true;
         }
     }
-    public IEnumerator Decay()
+    public IEnumerator Decay()//a coroutine that starts when you player atrition and will cause the SizeDown method to shrink the player
     {
         yield return new WaitForSeconds(13f);
         while (true)
